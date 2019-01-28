@@ -34,8 +34,8 @@
           <input type="text" disabled>
         </span>
       </div>
-      <div class="unitData">
-        <div class="unit">
+      <div id="list" class="unitData">
+        <div id="unit" class="unit">
           <span class="close"></span>
           <div class="control">
             <p>レアリティ</p>
@@ -77,13 +77,24 @@
             <textarea>ユニット名とか用途とか書けば良いんじゃね？</textarea>
           </div>
         </div>
-        <div class="unit">hoge</div>
-        <div class="unit">hoge</div>
-        <div class="unit">hoge</div>
-        <div class="unit"><span class="add"></span></div>
+        <div id="add" class="unit"><span class="add"></span></div>
       </div>
     </div>
   </div>
+
+  <script>
+    document.getElementById('add').addEventListener('click', e => {
+      const unit = document.getElementById('unit').cloneNode(true);
+      document.getElementById('list').insertBefore(unit, e.target);
+    });
+
+    document.querySelectorAll('input[type="radio"]')
+      .forEach(i => i.addEventListener('change', e => {
+        const lbl = e.target.parentNode;
+        lbl.parentNode.querySelector('.checked').classList.remove('checked');
+        lbl.classList.add('checked');
+      }));
+  </script>
 </body>
 
 </html>
