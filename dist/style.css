@@ -63,7 +63,7 @@ html, body {
   height: 45px;
   width: 100%;
   border-bottom: 1px solid black;
-  padding: 10px 10px 0;
+  padding: 5px 10px 0;
 }
 
 @media screen and (max-width: 599px) {
@@ -95,7 +95,7 @@ html, body {
 
 @media screen and (max-width: 599px) {
   #mainContent .inputContainer .buttons .filter input {
-    width: 180px;
+    width: 150px;
   }
 }
 
@@ -116,7 +116,7 @@ html, body {
 
 #mainContent .inputContainer .unitData .unit {
   width: 230px;
-  height: 200px;
+  height: 210px;
   border: 1px solid black;
   border-radius: 5px;
   margin-top: 10px;

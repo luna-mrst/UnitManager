@@ -7,10 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run start:css && npm run start:server",
     "start:server": "webpack-dev-server",
-    "start:css": "node-sass src\\style.scss dist\\style.css --output-style expanded",
+    "start:css": "node-sass src/style.scss dist/style.css --output-style expanded",
     "build": "npm run build:css && npm run build:src",
     "build:src": "webpack --mode production",
-    "build:css": "node-sass src\\style.scss dist\\style.css --output-style compressed"
+    "build:css": "node-sass src/style.scss dist/style.css --output-style compressed"
   },
   "repository": {
     "type": "git",

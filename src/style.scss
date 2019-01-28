@@ -76,7 +76,7 @@ html, body {
       }
       width: 100%;
       border-bottom: $border;
-      padding: 10px 10px 0;
+      padding: 5px 10px 0;
 
       .filter {
         @include sp {
@@ -92,7 +92,7 @@ html, body {
         input {
           width: 300px;
           @include sp {
-            width: 180px;
+            width: 150px;
           }
           font-size: 16px;
           vertical-align: middle;
@@ -116,7 +116,7 @@ html, body {
         @include sp {
           width: 330px;
         }
-        height: 200px;
+        height: 210px;
         border: $border;
         border-radius: 5px;
         margin-top: 10px;
