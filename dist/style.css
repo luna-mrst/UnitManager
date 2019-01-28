@@ -1,3 +1,9 @@
+html, body {
+  height: 97%;
+  margin: 0;
+  padding: 0;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -18,17 +24,83 @@
 }
 
 #mainContent {
-  width: 500px;
+  height: 100%;
   margin: 10px auto;
+}
+
+@media screen and (min-width: 1280px) {
+  #mainContent {
+    width: 990px;
+  }
+}
+
+@media screen and (min-width: 600px) and (max-width: 1279px) {
+  #mainContent {
+    width: 750px;
+  }
+}
+
+@media screen and (max-width: 599px) {
+  #mainContent {
+    width: 360px;
+  }
+}
+
+#mainContent #info {
+  height: 130px;
 }
 
 #mainContent #info p {
   margin: 0;
 }
 
-#mainContent #unitData {
-  height: 500px;
+#mainContent .inputContainer {
+  height: calc(100% - 130px);
   border: 1px solid black;
+}
+
+#mainContent .inputContainer .buttons {
+  height: 45px;
+  width: 100%;
+  border-bottom: 1px solid black;
+  padding: 10px 10px 0;
+}
+
+@media screen and (max-width: 599px) {
+  #mainContent .inputContainer .buttons {
+    height: 75px;
+  }
+}
+
+#mainContent .inputContainer .buttons .filter {
+  margin-top: 5px;
+}
+
+@media screen and (max-width: 599px) {
+  #mainContent .inputContainer .buttons .filter {
+    display: block;
+  }
+}
+
+#mainContent .inputContainer .buttons .filter select {
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+#mainContent .inputContainer .buttons .filter input {
+  width: 300px;
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+@media screen and (max-width: 599px) {
+  #mainContent .inputContainer .buttons .filter input {
+    width: 180px;
+  }
+}
+
+#mainContent .inputContainer .unitData {
+  height: calc(100% - 45px);
   display: flex;
   flex-flow: row wrap;
   justify-content: flex-start;
@@ -36,28 +108,13 @@
   overflow-y: scroll;
 }
 
-#mainContent #unitData .buttons {
-  width: 100%;
-  margin: 10px 10px 0;
+@media screen and (max-width: 599px) {
+  #mainContent .inputContainer .unitData {
+    height: calc(100% - 75px);
+  }
 }
 
-#mainContent #unitData .buttons .filter {
-  display: block;
-  margin-top: 5px;
-}
-
-#mainContent #unitData .buttons .filter select {
-  font-size: 16px;
-  vertical-align: middle;
-}
-
-#mainContent #unitData .buttons .filter input {
-  width: 150px;
-  font-size: 16px;
-  vertical-align: middle;
-}
-
-#mainContent #unitData .unit {
+#mainContent .inputContainer .unitData .unit {
   width: 230px;
   height: 200px;
   border: 1px solid black;
@@ -67,26 +124,32 @@
   position: relative;
 }
 
-#mainContent #unitData .unit .input {
+@media screen and (max-width: 599px) {
+  #mainContent .inputContainer .unitData .unit {
+    width: 330px;
+  }
+}
+
+#mainContent .inputContainer .unitData .unit .control {
   margin: 3px 3px 0;
 }
 
-#mainContent #unitData .unit .input p {
+#mainContent .inputContainer .unitData .unit .control p {
   margin: 0;
 }
 
-#mainContent #unitData .unit .input textarea {
+#mainContent .inputContainer .unitData .unit .control textarea {
   width: 100%;
   height: 5em;
   font-size: 16px;
   resize: none;
 }
 
-#mainContent #unitData .unit .input select {
+#mainContent .inputContainer .unitData .unit .control select {
   font-size: 16px;
 }
 
-#mainContent #unitData .unit .input .rare {
+#mainContent .inputContainer .unitData .unit .control .rare {
   display: inline-block;
   border: 1px solid black;
   border-radius: 5px;
@@ -94,16 +157,16 @@
   cursor: pointer;
 }
 
-#mainContent #unitData .unit .input .rare input {
+#mainContent .inputContainer .unitData .unit .control .rare input {
   margin: 0;
   cursor: pointer;
 }
 
-#mainContent #unitData .unit .input .rare.checked {
+#mainContent .inputContainer .unitData .unit .control .rare.checked {
   background: azure;
 }
 
-#mainContent #unitData .unit .close {
+#mainContent .inputContainer .unitData .unit .close {
   display: inline-block;
   position: absolute;
   top: 2px;
@@ -114,7 +177,7 @@
   cursor: pointer;
 }
 
-#mainContent #unitData .unit .close::before {
+#mainContent .inputContainer .unitData .unit .close::before {
   display: block;
   content: "";
   position: absolute;
@@ -126,7 +189,7 @@
   transform: rotate(45deg);
 }
 
-#mainContent #unitData .unit .close::after {
+#mainContent .inputContainer .unitData .unit .close::after {
   display: block;
   content: "";
   position: absolute;
@@ -138,11 +201,11 @@
   transform: rotate(-45deg);
 }
 
-#mainContent #unitData .unit .close:hover::before, #mainContent #unitData .unit .close:hover::after {
+#mainContent .inputContainer .unitData .unit .close:hover::before, #mainContent .inputContainer .unitData .unit .close:hover::after {
   background: gray;
 }
 
-#mainContent #unitData .unit .add::before {
+#mainContent .inputContainer .unitData .unit .add::before {
   content: "";
   position: absolute;
   top: calc(50% - 3px);
@@ -152,7 +215,7 @@
   background: gray;
 }
 
-#mainContent #unitData .unit .add::after {
+#mainContent .inputContainer .unitData .unit .add::after {
   content: "";
   position: absolute;
   top: calc(50% - 50px);
@@ -162,6 +225,7 @@
   background: gray;
 }
 
-#mainContent #unitData .unit:last-child {
+#mainContent .inputContainer .unitData .unit:last-child {
   cursor: pointer;
+  margin-bottom: 10px;
 }
