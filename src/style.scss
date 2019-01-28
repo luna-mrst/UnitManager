@@ -116,7 +116,7 @@ html, body {
         @include sp {
           width: 330px;
         }
-        height: 210px;
+        height: 245px;
         border: $border;
         border-radius: 5px;
         margin-top: 10px;
@@ -137,7 +137,7 @@ html, body {
             resize: none;
           }
 
-          select {
+          select, input {
             font-size: 16px;
           }
 
