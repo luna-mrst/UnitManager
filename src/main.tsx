@@ -9,7 +9,10 @@ import InfoProps from "./props/InfoProps";
 import { CostData } from "./CostData";
 
 class Main extends React.Component<any, MainState> {
+  /** ローカルストレージのユニットデータ保存キー */
   readonly STRAGE_KEY_UNITS = "strage_unit_data";
+  /** レアゴルの★2排出率 */
+  readonly RATE = 0.9653;
 
   constructor(props: any) {
     super(props);
@@ -214,7 +217,11 @@ class Main extends React.Component<any, MainState> {
     info.budCount = evolCount * 15;
     info.flowerCount = evolCount * 7;
 
-    // TODO: 必要ゴルド出す
+    // memo
+    // 排出率(スカウト1回あたり期待値) 96.53%
+    // レベル40まで上げるためのコスト 66900
+    const need = info.evolCount * 16;
+    info.scoutCost = Math.ceil(need / this.RATE) * 20000 + info.evolCount * 66900;
 
     return info;
   }
