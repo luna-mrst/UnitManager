@@ -5,107 +5,12 @@
   <meta charset="utf-8" />
   <title>Page Title</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- <link rel="stylesheet" href="dist/style.css" /> -->
+  <link rel="stylesheet" href="dist/style.css" />
 </head>
 
 <body id="root">
-  <div id="mainContent">
-    <div id="info">
-      <p>覚醒書総数： ★3=12 ★4=34 ★5=56</p>
-      <p>必要メダル： 12345枚</p>
-      <p>素材総数： 蕾=1234個 花=5678個</p>
-      <p>レアゴル費用： 約123456789ゴルド</p>
-      <p>レベル上げ費用： 123456789ゴルド</p>
-    </div>
-    <div class="inputContainer">
-      <div class="buttons">
-        <button>保存</button>
-        <button>エクスポート</button>
-        <button>インポート</button>
-        <span class="filter">
-          フィルタ：
-          <select>
-            <option value="">なし</option>
-            <option value="">★3</option>
-            <option value="">★4</option>
-            <option value="">★5</option>
-            <option value="">メモ</option>
-          </select>
-          <input type="text" disabled>
-        </span>
-      </div>
-      <div id="list" class="unitData">
-        <div id="unit" class="unit">
-          <span class="close"></span>
-          <div class="control">
-            <p>レアリティ</p>
-            <p>
-              <label class="rare checked">
-                <input type="radio" name="rare" value="3" checked>★3
-              </label>
-              <label class="rare">
-                <input type="radio" name="rare" value="4">★4
-              </label>
-              <label class="rare">
-                <input type="radio" name="rare" value="5">★5
-              </label>
-            </p>
-          </div>
-          <div class="control">
-            <p>現在の覚醒数：
-              <select name="kakusei">
-                <option value="0">0</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12">12</option>
-                <option value="13">13</option>
-                <option value="14">14</option>
-                <option value="15">15</option>
-              </select>
-            </p>
-          </div>
-          <div class="control">
-            <p>
-              現在のレベル：<input type="number" value="1" min="1" max="145" step="1">
-            </p>
-          </div>
-          <div class="control">
-            <p>メモ</p>
-            <textarea>ユニット名とか用途とか書けば良いんじゃね？</textarea>
-          </div>
-        </div>
-        <div id="add" class="unit"><span class="add"></span></div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    document.getElementById('add').addEventListener('click', e => {
-      const unit = document.getElementById('unit').cloneNode(true);
-      document.getElementById('list').insertBefore(unit, e.target);
-    });
-
-    document.querySelectorAll('input[type="radio"]')
-      .forEach(i => i.addEventListener('change', e => {
-        const lbl = e.target.parentNode;
-        lbl.parentNode.querySelector('.checked').classList.remove('checked');
-        lbl.classList.add('checked');
-      }));
-
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = `dist/style.css?${Math.random()}`;
-    document.head.appendChild(link);
-  </script>
+  <div id="content"></div>
+  <!-- <script src="./dist/bundle.js"></script> -->
 </body>
 
 </html>
