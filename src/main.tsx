@@ -1,15 +1,15 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import MainState from './props/MainState';
-import Info from './components/Info';
-import ListController from './components/ListController';
-import UnitList from './components/UnitList';
-import UnitModel from './models/UnitModel';
-import InfoProps from './props/InfoProps';
-import { CostData } from './CostData';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import MainState from "./props/MainState";
+import Info from "./components/Info";
+import ListController from "./components/ListController";
+import UnitList from "./components/UnitList";
+import UnitModel from "./models/UnitModel";
+import InfoProps from "./props/InfoProps";
+import { CostData } from "./CostData";
 
 class Main extends React.Component<any, MainState> {
-  readonly STRAGE_KEY_UNITS = 'strage_unit_data';
+  readonly STRAGE_KEY_UNITS = "strage_unit_data";
 
   constructor(props: any) {
     super(props);
@@ -37,8 +37,7 @@ class Main extends React.Component<any, MainState> {
       const units = JSON.parse(strageData);
       if (units.length > 0) return units;
     }
-    return [{ rare: 3, awakening: 0, level: 1, memo: '', displayFlag: true }];
-
+    return [{ rare: 3, awakening: 0, level: 1, memo: "", displayFlag: true }];
   }
 
   /**
@@ -46,33 +45,38 @@ class Main extends React.Component<any, MainState> {
    */
   handleClickSave(): void {
     const strageData = localStorage.getItem(this.STRAGE_KEY_UNITS);
-    if (strageData == null || window.confirm('保存内容を上書きしますか？')) {
-      localStorage.setItem(this.STRAGE_KEY_UNITS, JSON.stringify(this.state.units, (key, value) => {
-        if (key === 'displayFlag') return true;
-        return value;
-      }));
-      window.confirm('保存しましたっ');
+    if (strageData == null || window.confirm("保存内容を上書きしますか？")) {
+      localStorage.setItem(
+        this.STRAGE_KEY_UNITS,
+        JSON.stringify(this.state.units, (key, value) => {
+          if (key === "displayFlag") return true;
+          return value;
+        })
+      );
+      window.confirm("保存しましたっ");
     }
   }
   /**
    * エクスポートボタン
    */
   handleClickExport(): void {
-    window.alert('メンテ中だよ...!');
+    window.alert("メンテ中だよ...!");
   }
   /**
    * インポートボタン
    */
   handleClickImport(): void {
-    window.alert('メンテ中だよ...!');
+    window.alert("メンテ中だよ...!");
   }
   /**
    * フィルタ条件変更
+   * @param filterFunc 表示対象:true　非表示対象:falseを返す関数
    */
   handleChangeFilter(filterFunc: (unit: UnitModel) => boolean): void {
+    this.state.units.forEach(v => (v.displayFlag = filterFunc(v)));
     this.setState({
       filterFunc: filterFunc,
-      info: this.calcInfo(this.state.units.filter(filterFunc))
+      info: this.calcInfo(this.state.units)
     });
   }
   /**
@@ -80,13 +84,7 @@ class Main extends React.Component<any, MainState> {
    */
   handleClickAddUnit(): void {
     const units = this.state.units;
-    units.push({
-      rare: 3,
-      awakening: 0,
-      level: 1,
-      memo: '',
-      displayFlag: true
-    });
+    units.push(new UnitModel());
     this.setState({
       units: units
     });
@@ -99,7 +97,7 @@ class Main extends React.Component<any, MainState> {
     return (rare: number) => {
       const unit = this.state.units[idx];
       unit.rare = rare;
-      const info = this.calcInfo(this.state.units.filter(this.state.filterFunc));
+      const info = this.calcInfo(this.state.units);
       this.setState({
         units: this.state.units,
         info: info
@@ -114,7 +112,7 @@ class Main extends React.Component<any, MainState> {
     return (awakening: number) => {
       const unit = this.state.units[idx];
       unit.awakening = awakening;
-      const info = this.calcInfo(this.state.units.filter(this.state.filterFunc));
+      const info = this.calcInfo(this.state.units);
       this.setState({
         units: this.state.units,
         info: info
@@ -129,7 +127,7 @@ class Main extends React.Component<any, MainState> {
     return (level: number) => {
       const unit = this.state.units[idx];
       unit.level = level;
-      const info = this.calcInfo(this.state.units.filter(this.state.filterFunc));
+      const info = this.calcInfo(this.state.units);
       this.setState({
         units: this.state.units,
         info: info
@@ -155,8 +153,8 @@ class Main extends React.Component<any, MainState> {
    */
   handleClickRemove(idx: number): () => void {
     return () => {
-      const units = this.state.units.filter((_, i) => i !== idx)
-      const info = this.calcInfo(units.filter(this.state.filterFunc));
+      const units = this.state.units.filter((_, i) => i !== idx);
+      const info = this.calcInfo(units);
       this.setState({
         units: units,
         info: info
@@ -168,31 +166,36 @@ class Main extends React.Component<any, MainState> {
    */
   calcInfo(dispUnits: UnitModel[]): InfoProps {
     let maxLevel = 0;
-    const info = dispUnits.reduce<InfoProps>((info, unit) => {
-      const wantAwake = 15 - unit.awakening;
-      switch (unit.rare) {
-        case 3:
-          info.book3 += wantAwake;
-          info.medalCount += wantAwake * 150;
-          maxLevel = 125;
-          break;
-        case 4:
-          info.book4 += wantAwake;
-          info.medalCount += wantAwake * 300;
-          maxLevel = 135;
-          break
-        case 5:
-          info.book5 += wantAwake;
-          info.medalCount += wantAwake * 500;
-          maxLevel = 145;
-          break;
-      }
-      const maxCost = CostData.filter(d => d.level === maxLevel)[0].exp;
-      const nowCost = CostData.filter(d => d.level === unit.level)[0].exp;
+    const info = dispUnits.reduce<InfoProps>(
+      (info, unit) => {
+        // 表示対象のみ集計
+        if (!unit.displayFlag) return info;
 
-      info.levelUpCost += (maxCost - nowCost);
-      return info;
-    }, {
+        const wantAwake = 15 - unit.awakening;
+        switch (unit.rare) {
+          case 3:
+            info.book3 += wantAwake;
+            info.medalCount += wantAwake * 150;
+            maxLevel = 125;
+            break;
+          case 4:
+            info.book4 += wantAwake;
+            info.medalCount += wantAwake * 300;
+            maxLevel = 135;
+            break;
+          case 5:
+            info.book5 += wantAwake;
+            info.medalCount += wantAwake * 500;
+            maxLevel = 145;
+            break;
+        }
+        const maxCost = CostData.filter(d => d.level === maxLevel)[0].exp;
+        const nowCost = CostData.filter(d => d.level === unit.level)[0].exp;
+
+        info.levelUpCost += maxCost - nowCost;
+        return info;
+      },
+      {
         book3: 0,
         book4: 0,
         book5: 0,
@@ -200,11 +203,18 @@ class Main extends React.Component<any, MainState> {
         budCount: 0,
         flowerCount: 0,
         scoutCost: 0,
-        levelUpCost: 0
+        levelUpCost: 0,
+        evolCount: 0
       }
     );
 
-    // TODO: 素材とレアゴル費用の計算を実装する
+    // ★2の15覚醒換算、14以下はいらないか。。？
+    const evolCount = Math.ceil(info.medalCount / 375);
+    info.evolCount = evolCount;
+    info.budCount = evolCount * 15;
+    info.flowerCount = evolCount * 7;
+
+    // TODO: 必要ゴルド出す
 
     return info;
   }
@@ -222,6 +232,7 @@ class Main extends React.Component<any, MainState> {
           flowerCount={this.state.info.flowerCount}
           scoutCost={this.state.info.scoutCost}
           levelUpCost={this.state.info.levelUpCost}
+          evolCount={this.state.info.evolCount}
         />
         <div className="inputContainer">
           <ListController
@@ -233,7 +244,7 @@ class Main extends React.Component<any, MainState> {
           />
           <UnitList
             key="unitList"
-            units={this.state.units.filter(this.state.filterFunc)}
+            units={this.state.units}
             handleClickAddUnit={this.handleClickAddUnit}
             handleChangeRare={this.handleChangeRare}
             handleChangeAwakening={this.handleChangeAwakening}
@@ -247,7 +258,4 @@ class Main extends React.Component<any, MainState> {
   }
 }
 
-ReactDOM.render(
-  <Main />,
-  document.querySelector('#content'),
-);
+ReactDOM.render(<Main />, document.querySelector("#content"));
