@@ -1,6 +1,6 @@
-import * as React from 'react';
-import UnitListProps from '../props/UnitListProps';
-import Unit from './Unit';
+import * as React from "react";
+import UnitListProps from "../props/UnitListProps";
+import Unit from "./Unit";
 
 export default class UnitList extends React.Component<UnitListProps> {
   constructor(props: UnitListProps) {
@@ -8,16 +8,23 @@ export default class UnitList extends React.Component<UnitListProps> {
   }
 
   render(): JSX.Element {
-    const unitList: JSX.Element[] = this.props.units.filter(unit => unit.displayFlag).map((unit, idx) =>
-      <Unit
-        key={idx}
-        model={unit}
-        handleChangeRare={this.props.handleChangeRare(idx)}
-        handleChangeAwakening={this.props.handleChangeAwakening(idx)}
-        handleInputLevel={this.props.handleInputLevel(idx)}
-        handleInputMemo={this.props.handleInputMemo(idx)}
-        handleClickRemove={this.props.handleClickRemove(idx)}
-      />
+    const unitList: JSX.Element[] = this.props.units.reduce<JSX.Element[]>(
+      (acm, unit, idx) => {
+        if (unit.displayFlag)
+          acm.push(
+            <Unit
+              key={idx}
+              model={unit}
+              handleChangeRare={this.props.handleChangeRare(idx)}
+              handleChangeAwakening={this.props.handleChangeAwakening(idx)}
+              handleInputLevel={this.props.handleInputLevel(idx)}
+              handleInputMemo={this.props.handleInputMemo(idx)}
+              handleClickRemove={this.props.handleClickRemove(idx)}
+            />
+          );
+        return acm;
+      },
+      []
     );
 
     return (

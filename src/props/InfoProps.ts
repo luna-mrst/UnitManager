@@ -15,4 +15,6 @@ export default interface InfoProps {
     scoutCost: number;
     /** レベル上げ費用 */
     levelUpCost: number;
+    /** 15覚醒換算で何回進化させるか */
+    evolCount: number;
 }
