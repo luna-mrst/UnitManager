@@ -1,6 +1,8 @@
 import * as React from 'react';
 import ListControllerProps from '../props/ListControllerProps';
 import ListControllerState from '../props/ListControllerState';
+import UnitModel from '../models/UnitModel';
+import Unit from './Unit';
 
 export default class ListController extends React.Component<ListControllerProps, ListControllerState> {
   // フィルターのvalue定数
@@ -21,7 +23,23 @@ export default class ListController extends React.Component<ListControllerProps,
   handleChangeFilter(e: React.ChangeEvent<HTMLSelectElement>): void {
     this.setState({
       filterCondition: e.currentTarget.value
-    });
+    },
+      () => {
+        switch (this.state.filterCondition) {
+          case this.NONE:
+            this.props.handleChangeFilter(this.noFilter);
+            break;
+          case this.RARE3:
+          case this.RARE4:
+          case this.RARE5:
+            this.props.handleChangeFilter(this.rareFilter(parseInt(this.state.filterCondition)))
+            break;
+          case this.MEMO:
+            this.props.handleChangeFilter(this.memoFilter(this.state.filterWord));
+            break;
+        }
+      }
+    );
   }
 
   handleInputFilterWord(e: React.ChangeEvent<HTMLInputElement>): void {
@@ -31,7 +49,21 @@ export default class ListController extends React.Component<ListControllerProps,
   }
 
   handleBlurInput(e: React.FocusEvent<HTMLInputElement>): void {
+    this.props.handleChangeFilter(this.memoFilter(this.state.filterWord));
+  }
 
+  rareFilter(rare: number): (unit: UnitModel) => boolean {
+    return (unit: UnitModel) => unit.rare === rare;
+  }
+
+  noFilter(): boolean {
+    return true;
+  }
+
+  memoFilter(word: string): (unit: UnitModel) => boolean {
+    return (unit: UnitModel) => {
+      return unit.memo.indexOf(word) >= 0;
+    }
   }
 
   render(): JSX.Element {
