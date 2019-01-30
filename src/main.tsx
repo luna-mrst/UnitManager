@@ -7,6 +7,10 @@ import UnitList from "./components/UnitList";
 import UnitModel from "./models/UnitModel";
 import InfoProps from "./props/InfoProps";
 import { CostData } from "./CostData";
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import * as ReactModal from 'react-modal';
+import ExportModal from './components/ExportModal';
+import ImportModal from './components/ImportModal';
 
 class Main extends React.Component<any, MainState> {
   /** ローカルストレージのユニットデータ保存キー */
@@ -20,7 +24,9 @@ class Main extends React.Component<any, MainState> {
     this.state = {
       units: units,
       filterFunc: (unit: UnitModel) => true,
-      info: this.calcInfo(units)
+      info: this.calcInfo(units),
+      isOpenExportModal: false,
+      isOpenImportModal: false
     };
     this.handleClickSave = this.handleClickSave.bind(this);
     this.handleClickExport = this.handleClickExport.bind(this);
@@ -32,6 +38,8 @@ class Main extends React.Component<any, MainState> {
     this.handleInputLevel = this.handleInputLevel.bind(this);
     this.handleInputMemo = this.handleInputMemo.bind(this);
     this.handleClickRemove = this.handleClickRemove.bind(this);
+
+    ReactModal.setAppElement('#root');
   }
 
   initData(): UnitModel[] {
@@ -51,10 +59,9 @@ class Main extends React.Component<any, MainState> {
     if (strageData == null || window.confirm("保存内容を上書きしますか？")) {
       localStorage.setItem(
         this.STRAGE_KEY_UNITS,
-        JSON.stringify(this.state.units, (key, value) => {
-          if (key === "displayFlag") return true;
-          return value;
-        })
+        JSON.stringify(this.state.units, (key, value) =>
+          key === "displayFlag" ? true : value
+        )
       );
       window.confirm("保存しましたっ");
     }
@@ -63,13 +70,17 @@ class Main extends React.Component<any, MainState> {
    * エクスポートボタン
    */
   handleClickExport(): void {
-    window.alert("メンテ中だよ...!");
+    this.setState({
+      isOpenExportModal: true
+    });
   }
   /**
    * インポートボタン
    */
   handleClickImport(): void {
-    window.alert("メンテ中だよ...!");
+    this.setState({
+      isOpenImportModal: true
+    })
   }
   /**
    * フィルタ条件変更
@@ -229,18 +240,29 @@ class Main extends React.Component<any, MainState> {
   render(): JSX.Element {
     return (
       <div className="mainContent">
-        <Info
-          key="info"
-          book3={this.state.info.book3}
-          book4={this.state.info.book4}
-          book5={this.state.info.book5}
-          medalCount={this.state.info.medalCount}
-          budCount={this.state.info.budCount}
-          flowerCount={this.state.info.flowerCount}
-          scoutCost={this.state.info.scoutCost}
-          levelUpCost={this.state.info.levelUpCost}
-          evolCount={this.state.info.evolCount}
-        />
+        <Tabs className="tabContainer">
+          <TabList className="tablist">
+            <Tab className="tab" selectedClassName="selected">必要数</Tab>
+            <Tab className="tab" selectedClassName="selected">所持数</Tab>
+          </TabList>
+          <TabPanel className="tabItem">
+            <Info
+              key="info"
+              book3={this.state.info.book3}
+              book4={this.state.info.book4}
+              book5={this.state.info.book5}
+              medalCount={this.state.info.medalCount}
+              budCount={this.state.info.budCount}
+              flowerCount={this.state.info.flowerCount}
+              scoutCost={this.state.info.scoutCost}
+              levelUpCost={this.state.info.levelUpCost}
+              evolCount={this.state.info.evolCount}
+            />
+          </TabPanel>
+          <TabPanel className="tabItem">
+            <p style={{ color: 'red' }}>メンテ中だよ...!</p>
+          </TabPanel>
+        </Tabs>
         <div className="inputContainer">
           <ListController
             key="controller"
@@ -258,6 +280,17 @@ class Main extends React.Component<any, MainState> {
             handleInputLevel={this.handleInputLevel}
             handleInputMemo={this.handleInputMemo}
             handleClickRemove={this.handleClickRemove}
+          />
+
+          <ExportModal
+            units={this.state.units}
+            isOpen={this.state.isOpenExportModal}
+            closeModal={() => this.setState({ isOpenExportModal: false })}
+          />
+          <ImportModal
+            isOpen={this.state.isOpenImportModal}
+            loadData={units => this.setState({ units: units, info: this.calcInfo(units) })}
+            closeModal={() => this.setState({ isOpenImportModal: false })}
           />
         </div>
       </div>
