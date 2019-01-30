@@ -34,6 +34,7 @@ html, body {
   }
 
   &::-webkit-scrollbar-track {
+    border-radius: 10px;
     background: white;
     border-left: 1px solid #ececec;
   }
@@ -62,10 +63,64 @@ html, body {
   height: 100%;
   margin: 10px auto;
 
-  .info {
+  .tabContainer{
     height: 130px;
-    p {
+    display: flex;
+
+    .tablist {
+      height: 100%;
+      width: 30px;
       margin: 0;
+      padding: 0;
+      list-style: none;
+
+      .tab {
+        writing-mode: vertical-lr;
+        border: $border;
+        border-bottom: none;
+        border-radius: 5px 0 0 5px;
+        margin: 0;
+        height: 65px;
+        width: 30px;
+        text-align: center;
+        padding-left: 2px;
+        cursor: pointer;
+
+        &::before {
+          content: "";
+        }
+
+        &::after {
+          content: "";
+        }
+
+        &.selected {
+          background: azure;
+          border-right: none;
+        }
+      }
+    }
+
+    .tabItem {
+      width: 100%;
+      border: $border;
+      border-left: none;
+      border-bottom: none;
+      background: azure;
+      padding: 5px 0 0 5px;
+      display: none;
+      &.react-tabs__tab-panel--selected {
+        display: block;
+      }
+
+      .info {
+        height: 100%;
+        width: 100%;
+
+        p {
+          margin: 0;
+        }
+      }
     }
   }
 
@@ -237,5 +292,49 @@ html, body {
         }
       }
     }
+  }
+}
+
+.ReactModal__Content {
+  width: 600px;
+  @include sp {
+    width: 300px;
+  }
+  margin: 50px auto;
+  padding: 10px;
+  border: 1px solid gray;
+  border-radius: 8px;
+  background: white;
+
+  p {
+    margin: 0;
+
+    &.buttons {
+      button {
+        margin-right: 5px;
+      }
+    }
+  }
+
+  .export {
+    width: 100%;
+    height: 10em;
+    @include sp() {
+      height: 5em;
+    }
+    font-size: 16px;
+    overflow-y: auto;
+    border: $border;
+    overflow-wrap: break-word;
+    word-break: break-all;
+    padding: 3px 5px;
+    border-radius: 5px;
+  }
+
+  textarea {
+    width: 100%;
+    height: 50px;
+    font-size: 16px;
+    resize: none;
   }
 }

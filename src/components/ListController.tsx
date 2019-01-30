@@ -2,7 +2,6 @@ import * as React from 'react';
 import ListControllerProps from '../props/ListControllerProps';
 import ListControllerState from '../props/ListControllerState';
 import UnitModel from '../models/UnitModel';
-import Unit from './Unit';
 
 export default class ListController extends React.Component<ListControllerProps, ListControllerState> {
   // フィルターのvalue定数
