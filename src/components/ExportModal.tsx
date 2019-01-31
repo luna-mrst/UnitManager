@@ -33,16 +33,19 @@ export default class ExportModal extends React.Component<ExportModalProps> {
     range.selectNode(this.div);
     window.getSelection().addRange(range);
     document.execCommand("copy");
-    alert('コピーしたよ〜');
+    alert("コピーしたよ〜");
   }
 
   render(): JSX.Element {
-    const textData = JSON.stringify(this.props.units, (key, value) =>
-      key === "displayFlag" ? true : value
+    const textData = JSON.stringify(
+      { units: this.props.units, stock: this.props.stock },
+      (key, value) => (key === "displayFlag" ? true : value)
     );
     return (
       <ReactModal isOpen={this.props.isOpen} style={this.styles}>
-        <div className="export" ref={div => (this.div = div)}>{textData}</div>
+        <div className="export" ref={div => (this.div = div)}>
+          {textData}
+        </div>
         <p className="buttons">
           <button onClick={this.copyText}>コピーする</button>
           <button onClick={this.props.closeModal}>閉じる</button>

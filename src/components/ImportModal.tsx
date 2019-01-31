@@ -3,6 +3,8 @@ import * as ReactModal from "react-modal";
 import ImportModalProps from "../props/ImportModalProps";
 import ImportModalState from "../props/ImportModalState";
 import UnitModel from "../models/UnitModel";
+import StockModel from "../models/StockModel";
+import { object } from "prop-types";
 
 export default class ImportModal extends React.Component<
   ImportModalProps,
@@ -42,51 +44,94 @@ export default class ImportModal extends React.Component<
       this.loadError();
       return;
     }
-    if (!(jsonData instanceof Array)) {
+
+    let ret: { units: UnitModel[]; stock: StockModel };
+
+    try {
+      if (jsonData instanceof Array) {
+        // Stock未実装時に保存された値
+        ret = { units: this.loadUnits(jsonData), stock: new StockModel() };
+      } else {
+        ret = {
+          units: this.loadUnits(jsonData["units"]),
+          stock: this.loadStock(jsonData["stock"])
+        };
+      }
+    } catch (e) {
+      console.log(e);
       this.loadError();
       return;
     }
 
+    this.props.loadData(ret);
+    this.setState({
+      importText: ""
+    });
+    this.props.closeModal();
+  }
+
+  loadUnits(data: any[]): UnitModel[] {
+    if (data == null) throw "units arguments is null";
+
     let errFlg = false;
-    const units = jsonData.reduce<UnitModel[]>((a, v) => {
+    const units = data.reduce<UnitModel[]>((a, v) => {
       if (errFlg) return a;
 
       const unit = new UnitModel();
-
-      const rare = v["rare"];
+      const rare = v.rare;
       unit.rare =
         typeof rare === "number" && 3 <= rare && rare <= 5
           ? rare
           : ((errFlg = true), 0);
-      const awakening = v["awakening"];
+      const awakening = v.awakening;
       unit.awakening =
         typeof awakening === "number" && 0 <= awakening && awakening <= 15
           ? awakening
           : ((errFlg = true), 0);
-      const level = v["level"];
+      const level = v.level;
       unit.level =
         typeof level === "number" && 1 <= level && level <= 145
           ? level
           : ((errFlg = true), 0);
-      const displayFlag = v["displayFlag"];
+      const displayFlag = v.displayFlag;
       unit.displayFlag =
         typeof displayFlag === "boolean" ? true : ((errFlg = true), true);
-      const memo = v["memo"];
+      const memo = v.memo;
       unit.memo = typeof memo === "string" ? memo : ((errFlg = true), "");
 
       a.push(unit);
       return a;
     }, []);
 
-    if (errFlg) {
-      this.loadError();
-      return;
+    if (errFlg) throw "units parameter error";
+    return units;
+  }
+
+  loadStock(stock: any): StockModel {
+    if (stock == null) throw "stock arguments is null";
+
+    const book3 = stock.book3;
+    if (!(typeof book3 === "number" && book3 >= 0)) {
+      throw `book3 err typeof: ${typeof book3}`;
     }
-    this.props.loadData(units);
-    this.setState({
-      importText: ""
-    });
-    this.props.closeModal();
+    const book4 = stock.book4;
+    if (!(typeof book4 === "number" && book4 >= 0)) {
+      throw "book4 err";
+    }
+    const book5 = stock.book5;
+    if (!(typeof book5 === "number" && book5 >= 0)) {
+      throw "book5 err";
+    }
+    const medal = stock.medal;
+    if (!(typeof medal === "number" && medal >= 0)) {
+      throw "medal err";
+    }
+    return {
+      book3: book3,
+      book4: book4,
+      book5: book5,
+      medal: medal
+    };
   }
 
   loadError(): void {

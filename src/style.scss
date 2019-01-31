@@ -127,9 +127,14 @@ html, body {
         width: 100%;
         display: flex;
         flex-direction: column;
+        overflow-y: auto;
 
         p {
           margin: 0;
+        }
+
+        input {
+          font-size: 16px;  
         }
       }
     }
@@ -275,31 +280,39 @@ html, body {
             }
           }
         }
+      }
 
-        .add {
-          &::before {
-            content: "";
-            position: absolute;
-            top: calc(50% - 3px);
-            left: calc(50% - 50px);
-            width: 100px;
-            height: 6px;
-            background: gray;
-          }
-          &::after {
-            content: "";
-            position: absolute;
-            top: calc(50% - 50px);
-            left: calc(50% - 3px);
-            width: 6px;
-            height: 100px;
-            background: gray;
-          }
+      .add {
+        width: 230px;
+        @include sp {
+          width: 330px;
         }
+        height: 245px;
+        border: $border;
+        border-radius: 5px;
+        margin-top: 10px;
+        margin-left: 11px;
+        position: relative;
+        cursor: pointer;
+        margin-bottom: 10px;
 
-        &:last-child {
-          cursor: pointer;
-          margin-bottom: 10px;
+        &::before {
+          content: "";
+          position: absolute;
+          top: calc(50% - 3px);
+          left: calc(50% - 50px);
+          width: 100px;
+          height: 6px;
+          background: gray;
+        }
+        &::after {
+          content: "";
+          position: absolute;
+          top: calc(50% - 50px);
+          left: calc(50% - 3px);
+          width: 6px;
+          height: 100px;
+          background: gray;
         }
       }
     }
@@ -354,7 +367,7 @@ html, body {
   display: inline-block;
   font-size: 16px;
   width: 80px;
-  height: 21px;
+  height: 25px;
   border: 1px solid black;
   border-radius: 3px;
   position: relative;
@@ -369,7 +382,7 @@ html, body {
   &::after {
     content: "";
     position: absolute;
-    top: 7px;
+    top: 9px;
     right: 4px;
     width: 0px;
     height: 0px;
@@ -395,7 +408,7 @@ html, body {
     border: 1px solid black;
     overflow-y: auto;
     position: absolute;
-    top: 19px;
+    top: 23px;
     left: -1px;
     background: white;
 
