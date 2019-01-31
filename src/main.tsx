@@ -1,30 +1,34 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
+import * as ReactModal from "react-modal";
+import UnitModel from "./models/UnitModel";
+import StockModel from "./models/StockModel";
 import MainState from "./props/MainState";
 import Info from "./components/Info";
 import ListController from "./components/ListController";
 import UnitList from "./components/UnitList";
-import UnitModel from "./models/UnitModel";
-import InfoProps from "./props/InfoProps";
+import ExportModal from "./components/ExportModal";
+import ImportModal from "./components/ImportModal";
+import Stock from "./components/Stock";
 import { CostData } from "./CostData";
-import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import * as ReactModal from 'react-modal';
-import ExportModal from './components/ExportModal';
-import ImportModal from './components/ImportModal';
+import InfoModel from "./models/InfoModel";
 
 class Main extends React.Component<any, MainState> {
   /** ローカルストレージのユニットデータ保存キー */
   readonly STRAGE_KEY_UNITS = "strage_unit_data";
+  readonly STRAGE_KEY_STOCK = "strage_stock_data";
   /** レアゴルの★2排出率 */
   readonly RATE = 0.9653;
 
   constructor(props: any) {
     super(props);
-    const units = this.initData();
+    const { units, stock } = this.initData();
     this.state = {
       units: units,
+      info: this.calcInfo(units, stock),
+      stock: stock,
       filterFunc: (unit: UnitModel) => true,
-      info: this.calcInfo(units),
       isOpenExportModal: false,
       isOpenImportModal: false
     };
@@ -38,17 +42,30 @@ class Main extends React.Component<any, MainState> {
     this.handleInputLevel = this.handleInputLevel.bind(this);
     this.handleInputMemo = this.handleInputMemo.bind(this);
     this.handleClickRemove = this.handleClickRemove.bind(this);
+    this.handleChangeBook = this.handleChangeBook.bind(this);
+    this.handleChangeMedal = this.handleChangeMedal.bind(this);
 
-    ReactModal.setAppElement('#root');
+    ReactModal.setAppElement("#root");
   }
 
-  initData(): UnitModel[] {
-    const strageData = localStorage.getItem(this.STRAGE_KEY_UNITS);
-    if (strageData != null) {
-      const units = JSON.parse(strageData);
-      if (units.length > 0) return units;
+  initData(): { units: UnitModel[]; stock: StockModel } {
+    const strUnits = localStorage.getItem(this.STRAGE_KEY_UNITS);
+    const strStock = localStorage.getItem(this.STRAGE_KEY_STOCK);
+    const ret = {
+      units: [new UnitModel()],
+      stock: new StockModel()
+    };
+
+    if (strUnits != null) {
+      const units = JSON.parse(strUnits);
+      if (units.length > 0) ret.units = units;
     }
-    return [{ rare: 3, awakening: 0, level: 1, memo: "", displayFlag: true }];
+    if (strStock != null) {
+      const stock = JSON.parse(strStock);
+      ret.stock = stock;
+    }
+
+    return ret;
   }
 
   /**
@@ -62,6 +79,10 @@ class Main extends React.Component<any, MainState> {
         JSON.stringify(this.state.units, (key, value) =>
           key === "displayFlag" ? true : value
         )
+      );
+      localStorage.setItem(
+        this.STRAGE_KEY_STOCK,
+        JSON.stringify(this.state.stock)
       );
       window.confirm("保存しましたっ");
     }
@@ -80,7 +101,7 @@ class Main extends React.Component<any, MainState> {
   handleClickImport(): void {
     this.setState({
       isOpenImportModal: true
-    })
+    });
   }
   /**
    * フィルタ条件変更
@@ -90,7 +111,7 @@ class Main extends React.Component<any, MainState> {
     this.state.units.forEach(v => (v.displayFlag = filterFunc(v)));
     this.setState({
       filterFunc: filterFunc,
-      info: this.calcInfo(this.state.units)
+      info: this.calcInfo(this.state.units, this.state.stock)
     });
   }
   /**
@@ -111,7 +132,7 @@ class Main extends React.Component<any, MainState> {
     return (rare: number) => {
       const unit = this.state.units[idx];
       unit.rare = rare;
-      const info = this.calcInfo(this.state.units);
+      const info = this.calcInfo(this.state.units, this.state.stock);
       this.setState({
         units: this.state.units,
         info: info
@@ -126,7 +147,7 @@ class Main extends React.Component<any, MainState> {
     return (awakening: number) => {
       const unit = this.state.units[idx];
       unit.awakening = awakening;
-      const info = this.calcInfo(this.state.units);
+      const info = this.calcInfo(this.state.units, this.state.stock);
       this.setState({
         units: this.state.units,
         info: info
@@ -141,7 +162,7 @@ class Main extends React.Component<any, MainState> {
     return (level: number) => {
       const unit = this.state.units[idx];
       unit.level = level;
-      const info = this.calcInfo(this.state.units);
+      const info = this.calcInfo(this.state.units, this.state.stock);
       this.setState({
         units: this.state.units,
         info: info
@@ -168,7 +189,7 @@ class Main extends React.Component<any, MainState> {
   handleClickRemove(idx: number): () => void {
     return () => {
       const units = this.state.units.filter((_, i) => i !== idx);
-      const info = this.calcInfo(units);
+      const info = this.calcInfo(units, this.state.stock);
       this.setState({
         units: units,
         info: info
@@ -176,50 +197,70 @@ class Main extends React.Component<any, MainState> {
     };
   }
   /**
+   * 覚醒書書所持数変更
+   * @param value 個数
+   */
+  handleChangeBook(rare: "book3" | "book4" | "book5"): (value: number) => void {
+    return (value: number) => {
+      if (value < 0) return;
+      const stock = this.state.stock;
+      stock[rare] = value;
+      this.setState({
+        info: this.calcInfo(this.state.units, stock),
+        stock: stock
+      });
+    };
+  }
+  /**
+   * 所持メダル変更
+   * @param value メダル枚数
+   */
+  handleChangeMedal(value: number): void {
+    if (value < 0) return;
+    const stock = this.state.stock;
+    stock.medal = value;
+    this.setState({
+      info: this.calcInfo(this.state.units, stock),
+      stock: stock
+    });
+  }
+  /**
    * Infoの計算をするやつ。メイン機能。こいつができないと何の意味もない。
    */
-  calcInfo(dispUnits: UnitModel[]): InfoProps {
-    let maxLevel = 0;
-    const info = dispUnits.reduce<InfoProps>(
-      (info, unit) => {
-        // 表示対象のみ集計
-        if (!unit.displayFlag) return info;
+  calcInfo(dispUnits: UnitModel[], stock: StockModel): InfoModel {
+    const info = dispUnits.reduce<InfoModel>((info, unit) => {
+      // 表示対象のみ集計
+      if (!unit.displayFlag) return info;
 
-        const wantAwake = 15 - unit.awakening;
-        switch (unit.rare) {
-          case 3:
-            info.book3 += wantAwake;
-            info.medalCount += wantAwake * 150;
-            maxLevel = 125;
-            break;
-          case 4:
-            info.book4 += wantAwake;
-            info.medalCount += wantAwake * 300;
-            maxLevel = 135;
-            break;
-          case 5:
-            info.book5 += wantAwake;
-            info.medalCount += wantAwake * 500;
-            maxLevel = 145;
-            break;
-        }
-        const maxCost = CostData.filter(d => d.level === maxLevel)[0].exp;
-        const nowCost = CostData.filter(d => d.level === unit.level)[0].exp;
-
-        info.levelUpCost += maxCost - nowCost;
-        return info;
-      },
-      {
-        book3: 0,
-        book4: 0,
-        book5: 0,
-        medalCount: 0,
-        budCount: 0,
-        flowerCount: 0,
-        scoutCost: 0,
-        levelUpCost: 0,
-        evolCount: 0
+      let maxLevel = 0;
+      const wantAwake = 15 - unit.awakening;
+      switch (unit.rare) {
+        case 3:
+          info.book3 += wantAwake;
+          maxLevel = 125;
+          break;
+        case 4:
+          info.book4 += wantAwake;
+          maxLevel = 135;
+          break;
+        case 5:
+          info.book5 += wantAwake;
+          maxLevel = 145;
+          break;
       }
+      const maxCost = CostData.filter(d => d.level === maxLevel)[0].exp;
+      const nowCost = CostData.filter(d => d.level === unit.level)[0].exp;
+
+      info.levelUpCost += maxCost - nowCost;
+      return info;
+    }, new InfoModel());
+
+    info.book3 = Math.max(0, info.book3 - stock.book3);
+    info.book4 = Math.max(0, info.book4 - stock.book4);
+    info.book5 = Math.max(0, info.book5 - stock.book5);
+    info.medalCount = Math.max(
+      0,
+      info.book3 * 150 + info.book4 * 300 + info.book5 * 500 - stock.medal
     );
 
     // ★2の15覚醒換算、14以下はいらないか。。？
@@ -232,7 +273,8 @@ class Main extends React.Component<any, MainState> {
     // 排出率(スカウト1回あたり期待値) 96.53%
     // レベル40まで上げるためのコスト 66900
     const need = info.evolCount * 16;
-    info.scoutCost = Math.ceil(need / this.RATE) * 20000 + info.evolCount * 66900;
+    info.scoutCost =
+      Math.ceil(need / this.RATE) * 20000 + info.evolCount * 66900;
 
     return info;
   }
@@ -242,25 +284,24 @@ class Main extends React.Component<any, MainState> {
       <div className="mainContent">
         <Tabs className="tabContainer">
           <TabList className="tablist">
-            <Tab className="tab" selectedClassName="selected">必要数</Tab>
-            <Tab className="tab" selectedClassName="selected">所持数</Tab>
+            <Tab className="tab" selectedClassName="selected">
+              必要数
+            </Tab>
+            <Tab className="tab" selectedClassName="selected">
+              所持数
+            </Tab>
           </TabList>
           <TabPanel className="tabItem">
-            <Info
-              key="info"
-              book3={this.state.info.book3}
-              book4={this.state.info.book4}
-              book5={this.state.info.book5}
-              medalCount={this.state.info.medalCount}
-              budCount={this.state.info.budCount}
-              flowerCount={this.state.info.flowerCount}
-              scoutCost={this.state.info.scoutCost}
-              levelUpCost={this.state.info.levelUpCost}
-              evolCount={this.state.info.evolCount}
-            />
+            <Info key="info" info={this.state.info} />
           </TabPanel>
           <TabPanel className="tabItem">
-            <p style={{ color: 'red' }}>メンテ中だよ...!</p>
+            <Stock
+              stock={this.state.stock}
+              handleChangeBook3={this.handleChangeBook("book3")}
+              handleChangeBook4={this.handleChangeBook("book4")}
+              handleChangeBook5={this.handleChangeBook("book5")}
+              handleChangeMedal={this.handleChangeMedal}
+            />
           </TabPanel>
         </Tabs>
         <div className="inputContainer">
@@ -284,12 +325,19 @@ class Main extends React.Component<any, MainState> {
 
           <ExportModal
             units={this.state.units}
+            stock={this.state.stock}
             isOpen={this.state.isOpenExportModal}
             closeModal={() => this.setState({ isOpenExportModal: false })}
           />
           <ImportModal
             isOpen={this.state.isOpenImportModal}
-            loadData={units => this.setState({ units: units, info: this.calcInfo(units) })}
+            loadData={data =>
+              this.setState({
+                units: data.units,
+                stock: data.stock,
+                info: this.calcInfo(data.units, data.stock)
+              })
+            }
             closeModal={() => this.setState({ isOpenImportModal: false })}
           />
         </div>

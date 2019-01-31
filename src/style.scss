@@ -121,6 +121,22 @@ html, body {
           margin: 0;
         }
       }
+
+      .stock {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+
+        p {
+          margin: 0;
+        }
+
+        input {
+          font-size: 16px;  
+        }
+      }
     }
   }
 
@@ -264,31 +280,39 @@ html, body {
             }
           }
         }
+      }
 
-        .add {
-          &::before {
-            content: "";
-            position: absolute;
-            top: calc(50% - 3px);
-            left: calc(50% - 50px);
-            width: 100px;
-            height: 6px;
-            background: gray;
-          }
-          &::after {
-            content: "";
-            position: absolute;
-            top: calc(50% - 50px);
-            left: calc(50% - 3px);
-            width: 6px;
-            height: 100px;
-            background: gray;
-          }
+      .add {
+        width: 230px;
+        @include sp {
+          width: 330px;
         }
+        height: 245px;
+        border: $border;
+        border-radius: 5px;
+        margin-top: 10px;
+        margin-left: 11px;
+        position: relative;
+        cursor: pointer;
+        margin-bottom: 10px;
 
-        &:last-child {
-          cursor: pointer;
-          margin-bottom: 10px;
+        &::before {
+          content: "";
+          position: absolute;
+          top: calc(50% - 3px);
+          left: calc(50% - 50px);
+          width: 100px;
+          height: 6px;
+          background: gray;
+        }
+        &::after {
+          content: "";
+          position: absolute;
+          top: calc(50% - 50px);
+          left: calc(50% - 3px);
+          width: 6px;
+          height: 100px;
+          background: gray;
         }
       }
     }
@@ -338,3 +362,71 @@ html, body {
     resize: none;
   }
 }
+
+.dropdown {
+  display: inline-block;
+  font-size: 16px;
+  width: 80px;
+  height: 25px;
+  border: 1px solid black;
+  border-radius: 3px;
+  position: relative;
+  outline: none;
+  cursor: pointer;
+
+  &.open {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 9px;
+    right: 4px;
+    width: 0px;
+    height: 0px;
+    border: 5px solid transparent;
+    border-top-color: black;
+  }
+
+  .dropvalue {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    text-align: right;
+    padding-right: 17px;
+  }
+
+  .dropitem {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 80px;
+    text-align: right;
+    height: 5em;
+    border: 1px solid black;
+    overflow-y: auto;
+    position: absolute;
+    top: 23px;
+    left: -1px;
+    background: white;
+
+    & li{
+      &:hover {
+        background: azure;
+      }
+
+      &.selected {
+        background: lightyellow;
+      }
+    }
+
+    &.hidden {
+      display: none;
+    }
+  }
+}
+
+
+

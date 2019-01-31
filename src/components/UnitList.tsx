@@ -30,8 +30,7 @@ export default class UnitList extends React.Component<UnitListProps> {
     return (
       <div className="unitData">
         {unitList}
-        <div className="unit" onClick={this.props.handleClickAddUnit}>
-          <span className="add" />
+        <div className="add" onClick={this.props.handleClickAddUnit}>
         </div>
       </div>
     );
