@@ -1,9 +1,11 @@
 import UnitModel from "../models/UnitModel";
-import InfoProps from "./InfoProps";
+import InfoModel from "../models/InfoModel";
+import StockModel from "../models/StockModel";
 
 export default interface MainState {
   units: UnitModel[];
-  info: InfoProps;
+  info: InfoModel;
+  stock: StockModel;
   filterFunc: (unit: UnitModel) => boolean;
   isOpenExportModal: boolean;
   isOpenImportModal: boolean;
