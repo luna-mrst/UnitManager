@@ -2,37 +2,31 @@ import * as React from "react";
 import UnitListProps from "../props/UnitListProps";
 import Unit from "./Unit";
 
-export default class UnitList extends React.Component<UnitListProps> {
-  constructor(props: UnitListProps) {
-    super(props);
-  }
+export default function UnitList(props: UnitListProps): JSX.Element {
+  const unitList: JSX.Element[] = props.units.reduce<JSX.Element[]>(
+    (list, unit, idx) => {
+      if (unit.displayFlag)
+        list.push(
+          <Unit
+            key={idx}
+            model={unit}
+            handleChangeRare={props.handleChangeRare(idx)}
+            handleChangeAwakening={props.handleChangeAwakening(idx)}
+            handleInputLevel={props.handleInputLevel(idx)}
+            handleInputMemo={props.handleInputMemo(idx)}
+            handleClickRemove={props.handleClickRemove(idx)}
+          />
+        );
+      return list;
+    },
+    []
+  );
 
-  render(): JSX.Element {
-    const unitList: JSX.Element[] = this.props.units.reduce<JSX.Element[]>(
-      (acm, unit, idx) => {
-        if (unit.displayFlag)
-          acm.push(
-            <Unit
-              key={idx}
-              model={unit}
-              handleChangeRare={this.props.handleChangeRare(idx)}
-              handleChangeAwakening={this.props.handleChangeAwakening(idx)}
-              handleInputLevel={this.props.handleInputLevel(idx)}
-              handleInputMemo={this.props.handleInputMemo(idx)}
-              handleClickRemove={this.props.handleClickRemove(idx)}
-            />
-          );
-        return acm;
-      },
-      []
-    );
-
-    return (
-      <div className="unitData">
-        {unitList}
-        <div className="add" onClick={this.props.handleClickAddUnit}>
-        </div>
+  return (
+    <div className="unitData">
+      {unitList}
+      <div className="add" onClick={props.handleClickAddUnit}>
       </div>
-    );
-  }
+    </div>
+  );
 }
