@@ -10,6 +10,18 @@ export default function Unit(props: UnitProps): JSX.Element {
         checked={props.model.rare === v} />★{v}
     </label>
   ), [props.model.rare]);
+  const maxLevel = props.model.rare * 10 + 95;
+
+  const [memo, setMemo] = React.useState(props.model.memo);
+  const [level, setLevel] = React.useState(`${props.model.level}`);
+  const handleChangeMemo = React.useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => setMemo(e.currentTarget.value), []);
+  const handleBlurMemo = React.useCallback(() => props.handleInputMemo(memo), [memo]);
+  const handleChangeLevel = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => setLevel(e.currentTarget.value), []);
+  const handleBlurLevel = React.useCallback(() => {
+    const tmp = Math.min(maxLevel, Math.max(1, parseInt(level)));
+    setLevel(`${tmp}`);
+    props.handleInputLevel(Number.isNaN(tmp) ? 1 : tmp);
+  }, [level, maxLevel]);
 
   return (
     <form>
@@ -34,18 +46,18 @@ export default function Unit(props: UnitProps): JSX.Element {
           <p>
             現在のレベル：<input
               type="number"
-              value={props.model.level}
+              value={level}
               min="1"
-              max={95 + props.model.rare * 10}
+              max={maxLevel}
               step="1"
-              onChange={e => props.handleInputLevel(!e.currentTarget.value || e.currentTarget.value === '0'
-                ? 1 : parseInt(e.currentTarget.value))}
+              onChange={handleChangeLevel}
+              onBlur={handleBlurLevel}
             />
           </p>
         </div>
         <div className="control">
           <p>メモ</p>
-          <textarea value={props.model.memo} onChange={e => props.handleInputMemo(e.currentTarget.value)} />
+          <textarea value={memo} onChange={handleChangeMemo} onBlur={handleBlurMemo} />
         </div>
       </div>
     </form>
